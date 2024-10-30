@@ -7,25 +7,43 @@ settings:
 dependencies:
   '@langchain/community':
     specifier: ^0.3.10
-    version: 0.3.10(@ibm-cloud/watsonx-ai@1.1.1)(@langchain/core@0.3.15)(axios@1.7.4)(ibm-cloud-sdk-core@5.1.0)
+    version: 0.3.10(@ibm-cloud/watsonx-ai@1.1.1)(@langchain/core@0.3.15)(axios@1.7.4)(ibm-cloud-sdk-core@5.1.0)(jsonwebtoken@9.0.2)
   '@langchain/core':
     specifier: ^0.3.15
     version: 0.3.15
   '@nestjs/common':
     specifier: ^9.0.0
     version: 9.0.0(reflect-metadata@0.1.13)(rxjs@7.2.0)
+  '@nestjs/config':
+    specifier: ^3.3.0
+    version: 3.3.0(@nestjs/common@9.0.0)(rxjs@7.2.0)
   '@nestjs/core':
     specifier: ^9.0.0
     version: 9.0.0(@nestjs/common@9.0.0)(@nestjs/platform-express@9.0.0)(reflect-metadata@0.1.13)(rxjs@7.2.0)
+  '@nestjs/mapped-types':
+    specifier: '*'
+    version: 2.0.5(@nestjs/common@9.0.0)(reflect-metadata@0.1.13)
   '@nestjs/platform-express':
     specifier: ^9.0.0
     version: 9.0.0(@nestjs/common@9.0.0)(@nestjs/core@9.0.0)
+  dotenv:
+    specifier: ^16.4.5
+    version: 16.4.5
+  jsonwebtoken:
+    specifier: ^9.0.2
+    version: 9.0.2
+  langchain:
+    specifier: ^0.3.5
+    version: 0.3.5(@langchain/core@0.3.15)(axios@1.7.4)
   reflect-metadata:
     specifier: ^0.1.13
     version: 0.1.13
   rxjs:
     specifier: ^7.2.0
     version: 7.2.0
+  zod:
+    specifier: ^3.23.8
+    version: 3.23.8
 
 devDependencies:
   '@nestjs/cli':
@@ -780,7 +798,7 @@ packages:
       '@jridgewell/sourcemap-codec': 1.5.0
     dev: true
 
-  /@langchain/community@0.3.10(@ibm-cloud/watsonx-ai@1.1.1)(@langchain/core@0.3.15)(axios@1.7.4)(ibm-cloud-sdk-core@5.1.0):
+  /@langchain/community@0.3.10(@ibm-cloud/watsonx-ai@1.1.1)(@langchain/core@0.3.15)(axios@1.7.4)(ibm-cloud-sdk-core@5.1.0)(jsonwebtoken@9.0.2):
     resolution: {integrity: sha512-aIbkkNWvuqDA8mQf1xMC6VbT9rXebFPrK3+qWiA+beq487bfPcOroel540842WvhluAQaIiOAsHp3qGj8b+GXw==}
     engines: {node: '>=18'}
     peerDependencies:
@@ -1157,6 +1175,7 @@ packages:
       flat: 5.0.2
       ibm-cloud-sdk-core: 5.1.0
       js-yaml: 4.1.0
+      jsonwebtoken: 9.0.2
       langchain: 0.3.5(@langchain/core@0.3.15)(axios@1.7.4)
       langsmith: 0.2.2
       uuid: 10.0.0
@@ -1279,6 +1298,19 @@ packages:
       tslib: 2.4.0
       uuid: 8.3.2
 
+  /@nestjs/config@3.3.0(@nestjs/common@9.0.0)(rxjs@7.2.0):
+    resolution: {integrity: sha512-pdGTp8m9d0ZCrjTpjkUbZx6gyf2IKf+7zlkrPNMsJzYZ4bFRRTpXrnj+556/5uiI6AfL5mMrJc2u7dB6bvM+VA==}
+    peerDependencies:
+      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
+      rxjs: ^7.1.0
+    dependencies:
+      '@nestjs/common': 9.0.0(reflect-metadata@0.1.13)(rxjs@7.2.0)
+      dotenv: 16.4.5
+      dotenv-expand: 10.0.0
+      lodash: 4.17.21
+      rxjs: 7.2.0
+    dev: false
+
   /@nestjs/core@9.0.0(@nestjs/common@9.0.0)(@nestjs/platform-express@9.0.0)(reflect-metadata@0.1.13)(rxjs@7.2.0):
     resolution: {integrity: sha512-Ib25JrYQf5ICro19FBytoMpMQicanC4HG3goPBSqsolu+AhVzSU0OhDwmmiDy3aHgmheFnNEEdUH+Gh5Rm2cNw==}
     requiresBuild: true
@@ -1310,6 +1342,23 @@ packages:
       uuid: 8.3.2
     transitivePeerDependencies:
       - encoding
+
+  /@nestjs/mapped-types@2.0.5(@nestjs/common@9.0.0)(reflect-metadata@0.1.13):
+    resolution: {integrity: sha512-bSJv4pd6EY99NX9CjBIyn4TVDoSit82DUZlL4I3bqNfy5Gt+gXTa86i3I/i0iIV9P4hntcGM5GyO+FhZAhxtyg==}
+    peerDependencies:
+      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
+      class-transformer: ^0.4.0 || ^0.5.0
+      class-validator: ^0.13.0 || ^0.14.0
+      reflect-metadata: ^0.1.12 || ^0.2.0
+    peerDependenciesMeta:
+      class-transformer:
+        optional: true
+      class-validator:
+        optional: true
+    dependencies:
+      '@nestjs/common': 9.0.0(reflect-metadata@0.1.13)(rxjs@7.2.0)
+      reflect-metadata: 0.1.13
+    dev: false
 
   /@nestjs/platform-express@9.0.0(@nestjs/common@9.0.0)(@nestjs/core@9.0.0):
     resolution: {integrity: sha512-5W5KeYHKKQe4/H7DcPViIObC9nO74P8wnLZUpk4HCUUuFZIzPpUu9v+RAg7c/jGrbdyjfg3VKODCUKFo6PBfmg==}
@@ -2692,6 +2741,11 @@ packages:
     dependencies:
       esutils: 2.0.3
     dev: true
+
+  /dotenv-expand@10.0.0:
+    resolution: {integrity: sha512-GopVGCpVS1UKH75VKHGuQFqS1Gusej0z4FyQkPdwjil2gNIv+LNsqBlboOzpJFZKVT95GkCyWJbBSdFEFUWI2A==}
+    engines: {node: '>=12'}
+    dev: false
 
   /dotenv@16.4.5:
     resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
@@ -4399,7 +4453,6 @@ packages:
 
   /lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
-    dev: true
 
   /log-symbols@4.1.0:
     resolution: {integrity: sha512-8XPvpAA8uyhfteu8pIvQxpJZ7SYYdpUivZpGy6sFsBuKRY/7rQGavedeB8aK+Zkyq6upMFVL/9AW6vOYzfRyLg==}
