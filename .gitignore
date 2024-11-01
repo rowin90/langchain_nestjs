@@ -15,6 +15,7 @@ lerna-debug.log*
 # OS
 .DS_Store
 .env
+.nestjs_repl_history
 # Tests
 /coverage
 /.nyc_output
