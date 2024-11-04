@@ -6,7 +6,10 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Post('/withHistory')
-  async withHistory(@Body('question') question: string) {
-    return await this.chatService.withHistory(question);
+  async withHistory(
+    @Body('question') question: string,
+    @Body('sessionId') sessionId: string,
+  ) {
+    return await this.chatService.withHistory(question, sessionId);
   }
 }

@@ -10,8 +10,9 @@ import { StringOutputParser } from '@langchain/core/output_parsers';
 
 @Injectable()
 export class ChatService {
-  async withHistory(question: string) {
-    const history = new ChatMessageHistory();
+  globalHistory = {};
+
+  async withHistory(question: string, sessionId: string) {
     const model = new GlmModelProvider().createModel();
 
     const prompt = ChatPromptTemplate.fromMessages([
@@ -27,29 +28,29 @@ export class ChatService {
 
     const chainWithHistory = new RunnableWithMessageHistory({
       runnable: chain,
-      getMessageHistory: (sessionId) => history,
+      getMessageHistory: (sessionId) => this.getHistory(sessionId),
       inputMessagesKey: 'input',
       historyMessagesKey: 'history_message',
     });
 
-    const res1 = await chainWithHistory.invoke(
-      {
-        input: 'hi, my name is Kai',
-      },
-      {
-        configurable: { sessionId: 'none' },
-      },
-    );
-
-    const res2 = await chainWithHistory.invoke(
+    const res = await chainWithHistory.invoke(
       {
         input: question,
       },
       {
-        configurable: { sessionId: 'none' },
+        configurable: { sessionId },
       },
     );
 
-    return res2;
+    return res;
+  }
+
+  getHistory(sessionId: string) {
+    if (this.globalHistory[sessionId]) {
+      return this.globalHistory[sessionId];
+    } else {
+      this.globalHistory[sessionId] = new ChatMessageHistory();
+      return this.globalHistory[sessionId];
+    }
   }
 }
