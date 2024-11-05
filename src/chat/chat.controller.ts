@@ -12,4 +12,12 @@ export class ChatController {
   ) {
     return await this.chatService.withHistory(question, sessionId);
   }
+
+  @Post('/withSummaryHistory')
+  async withSummaryHistory(
+    @Body('question') question: string,
+    @Body('sessionId') sessionId: string,
+  ) {
+    return await this.chatService.withSummaryHistory(question, sessionId);
+  }
 }
