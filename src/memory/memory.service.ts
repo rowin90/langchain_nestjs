@@ -7,6 +7,8 @@ import {
   RunnableSequence,
 } from '@langchain/core/runnables';
 import { GlmModelProvider } from '../ai/model/glm';
+import { JSONChatHistory } from './JSONChatHistory';
+import { AIMessage, HumanMessage } from '@langchain/core/messages';
 
 @Injectable()
 export class MemoryService {
@@ -67,5 +69,20 @@ export class MemoryService {
     ]);
 
     return await chain.invoke(question);
+  }
+
+  async withCustomLocalHistory() {
+    const history = new JSONChatHistory({
+      dir: 'chat_data',
+      sessionId: 'test',
+    });
+
+    await history.addMessages([
+      new HumanMessage('Hi, 我叫小明'),
+      new AIMessage('你好'),
+    ]);
+
+    const messages = await history.getMessages();
+    console.log(messages);
   }
 }

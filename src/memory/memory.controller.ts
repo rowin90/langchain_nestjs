@@ -9,4 +9,8 @@ export class MemoryController {
   async withBufferMemory(@Body('question') question: string) {
     return await this.memoryService.withBufferMemory(question);
   }
+  @Post('/withCustomLocalHistory')
+  async withCustomLocalHistory() {
+    return await this.memoryService.withCustomLocalHistory();
+  }
 }
