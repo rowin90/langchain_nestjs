@@ -6,8 +6,9 @@ import { AiModule } from './ai/ai.module';
 import { ConfigModule } from '@nestjs/config';
 import { RagModule } from './rag/rag.module';
 import { ChatModule } from './chat/chat.module';
+import { MemoryModule } from './memory/memory.module';
 @Module({
-  imports: [ConfigModule.forRoot(), OllamaModule, AiModule, RagModule, ChatModule],
+  imports: [ConfigModule.forRoot(), OllamaModule, AiModule, RagModule, ChatModule, MemoryModule],
   controllers: [AppController],
   providers: [AppService],
 })
