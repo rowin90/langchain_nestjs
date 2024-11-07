@@ -11,6 +11,9 @@ dependencies:
   '@langchain/core':
     specifier: ^0.3.15
     version: 0.3.15
+  '@langchain/openai':
+    specifier: ^0.3.12
+    version: 0.3.12(@langchain/core@0.3.15)
   '@nestjs/common':
     specifier: ^9.0.0
     version: 9.0.0(reflect-metadata@0.1.13)(rxjs@7.2.0)
@@ -47,6 +50,9 @@ dependencies:
   zod:
     specifier: ^3.23.8
     version: 3.23.8
+  zod-to-json-schema:
+    specifier: ^3.23.5
+    version: 3.23.5(zod@3.23.8)
 
 devDependencies:
   '@nestjs/cli':
@@ -1172,7 +1178,7 @@ packages:
     dependencies:
       '@ibm-cloud/watsonx-ai': 1.1.1
       '@langchain/core': 0.3.15
-      '@langchain/openai': 0.3.11(@langchain/core@0.3.15)
+      '@langchain/openai': 0.3.12(@langchain/core@0.3.15)
       binary-extensions: 2.3.0
       expr-eval: 2.0.2
       faiss-node: 0.5.1
@@ -1220,15 +1226,15 @@ packages:
       - openai
     dev: false
 
-  /@langchain/openai@0.3.11(@langchain/core@0.3.15):
-    resolution: {integrity: sha512-mEFbpJ8w8NPArsquUlCwxvZTKNkXxqwzvTEYzv6Jb7gUoBDOZtwLg6AdcngTJ+w5VFh3wxgPy0g3zb9Aw0Qbpw==}
+  /@langchain/openai@0.3.12(@langchain/core@0.3.15):
+    resolution: {integrity: sha512-z8y0zdKovjY6bB0D3D+K99bPAN+wFRQcrWDfHfX7yVmYwq1O8GOIzQgCBth0vbhbzeuaJ4dz3+oqN/4Q2PCpHg==}
     engines: {node: '>=18'}
     peerDependencies:
       '@langchain/core': '>=0.2.26 <0.4.0'
     dependencies:
       '@langchain/core': 0.3.15
       js-tiktoken: 1.0.15
-      openai: 4.68.4(zod@3.23.8)
+      openai: 4.71.1(zod@3.23.8)
       zod: 3.23.8
       zod-to-json-schema: 3.23.5(zod@3.23.8)
     transitivePeerDependencies:
@@ -4411,7 +4417,7 @@ packages:
         optional: true
     dependencies:
       '@langchain/core': 0.3.15
-      '@langchain/openai': 0.3.11(@langchain/core@0.3.15)
+      '@langchain/openai': 0.3.12(@langchain/core@0.3.15)
       '@langchain/textsplitters': 0.1.0(@langchain/core@0.3.15)
       axios: 1.7.4(debug@4.3.7)
       js-tiktoken: 1.0.15
@@ -4767,8 +4773,8 @@ packages:
       mimic-fn: 2.1.0
     dev: true
 
-  /openai@4.68.4(zod@3.23.8):
-    resolution: {integrity: sha512-LRinV8iU9VQplkr25oZlyrsYGPGasIwYN8KFMAAFTHHLHjHhejtJ5BALuLFrkGzY4wfbKhOhuT+7lcHZ+F3iEA==}
+  /openai@4.71.1(zod@3.23.8):
+    resolution: {integrity: sha512-C6JNMaQ1eijM0lrjiRUL3MgThVP5RdwNAghpbJFdW0t11LzmyqON8Eh8MuUuEZ+CeD6bgYl2Fkn2BoptVxv9Ug==}
     hasBin: true
     peerDependencies:
       zod: ^3.23.8

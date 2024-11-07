@@ -10,7 +10,7 @@ export class GlmModelProvider extends BaseModelProvider<ChatZhipuAI> {
     super();
   }
   // 异步创建模型方法
-  createModel(options?) {
+  createModel(options?): ChatZhipuAI {
     // 设置智谱AI的API密钥
     const aiKey = process.env.ZHIPU_API_KEY;
     // 设置模型名称
