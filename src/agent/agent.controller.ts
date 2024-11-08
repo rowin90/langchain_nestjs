@@ -17,10 +17,31 @@ export class AgentController {
     return await this.agentRunBranchService.runnableBranch(input);
   }
   /**
-   * runnableBranch
+   * reactAgent
    */
   @Post('/reactAgent')
   async reactAgent(@Body('input') input: string) {
     return await this.agentService.reactAgent(input);
+  }
+  /**
+   * openAIToolsAgent
+   */
+  @Post('/openAIToolsAgent')
+  async openAIToolsAgent(@Body('input') input: string) {
+    return await this.agentService.openAIToolsAgent(input);
+  }
+  /**
+   * dynamicTool
+   */
+  @Post('/dynamicTool')
+  async dynamicTool(@Body('input') input: string) {
+    return await this.agentService.dynamicTool(input);
+  }
+  /**
+   * dynamicStructuredTool
+   */
+  @Post('/dynamicStructuredTool')
+  async dynamicStructuredTool(@Body('input') input: string) {
+    return await this.agentService.dynamicStructuredTool(input);
   }
 }
