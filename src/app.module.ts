@@ -8,6 +8,7 @@ import { RagModule } from './rag/rag.module';
 import { ChatModule } from './chat/chat.module';
 import { MemoryModule } from './memory/memory.module';
 import { FcModule } from './fc/fc.module';
+import { AgentModule } from './agent/agent.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -17,6 +18,7 @@ import { FcModule } from './fc/fc.module';
     ChatModule,
     MemoryModule,
     FcModule,
+    AgentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
