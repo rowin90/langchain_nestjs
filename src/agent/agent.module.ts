@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AgentService } from './agent.service';
+import { AgentRunBranchService } from './agent.runBranch.service';
 import { AgentController } from './agent.controller';
+import { AgentService } from './agent.service';
 
 @Module({
   controllers: [AgentController],
-  providers: [AgentService]
+  providers: [AgentRunBranchService, AgentService],
 })
 export class AgentModule {}
