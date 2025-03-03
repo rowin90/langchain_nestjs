@@ -8,7 +8,7 @@ import {
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from '@langchain/core/prompts';
-import { GlmModelProvider } from '../ai/model/glm';
+import { OllamaModel } from '../ai/model/ollamaModel';
 import { ChatMessageHistory, getBufferString } from 'langchain/memory';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 
@@ -17,7 +17,7 @@ export class ChatService {
   private model: any;
 
   constructor() {
-    this.model = new GlmModelProvider().createModel();
+    this.model = new OllamaModel().createModel();
   }
 
   globalHistory = {};
