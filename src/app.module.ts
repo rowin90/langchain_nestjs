@@ -9,6 +9,7 @@ import { ChatModule } from './chat/chat.module';
 import { MemoryModule } from './memory/memory.module';
 import { FcModule } from './fc/fc.module';
 import { AgentModule } from './agent/agent.module';
+import { StudyModule } from "./study/study.module";
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -19,6 +20,7 @@ import { AgentModule } from './agent/agent.module';
     MemoryModule,
     FcModule,
     AgentModule,
+    StudyModule
   ],
   controllers: [AppController],
   providers: [AppService],

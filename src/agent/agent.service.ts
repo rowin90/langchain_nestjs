@@ -14,6 +14,7 @@ import type {
 } from '@langchain/core/prompts';
 import { Calculator } from '@langchain/community/tools/calculator';
 import { DynamicTool, DynamicStructuredTool } from 'langchain/tools';
+import { AgentFinish } from 'langchain/agents';
 
 @Injectable()
 export class AgentService {
@@ -60,11 +61,21 @@ export class AgentService {
     const agentExecutor = new AgentExecutor({
       agent,
       tools,
+      handleParsingErrors: (error) => {
+        console.log('=>(agent.service.ts 64) error.message', error.message);
+        console.log('=========\n');
+
+        if (error.message.includes('Final Answer')) {
+          return error.message.split('Final Answer:')[1];
+        }
+        return '请求解析失败，请重试';
+      },
     });
 
-    return await agentExecutor.invoke({
+    const res = await agentExecutor.invoke({
       input,
     });
+    console.log(res);
   }
 
   async openAIToolsAgent(input: string) {
