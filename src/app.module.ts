@@ -9,10 +9,13 @@ import { ChatModule } from './chat/chat.module';
 import { MemoryModule } from './memory/memory.module';
 import { FcModule } from './fc/fc.module';
 import { AgentModule } from './agent/agent.module';
-import { StudyModule } from "./study/study.module";
+
+import { StudyModule } from './study/study.module';
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     OllamaModule,
     AiModule,
     RagModule,
@@ -20,7 +23,7 @@ import { StudyModule } from "./study/study.module";
     MemoryModule,
     FcModule,
     AgentModule,
-    StudyModule
+    StudyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,8 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
-import { OpenAIModel, ChatOpenAIType } from '../ai/model/openAIModel';
-import { JsonOutputToolsParser } from '@langchain/core/output_parsers/openai_tools';
 import {
   ChatPromptTemplate,
   PromptTemplate,
