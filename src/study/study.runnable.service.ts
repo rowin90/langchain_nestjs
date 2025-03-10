@@ -8,6 +8,7 @@ import {
   RunnableLambda,
   RunnableParallel,
   RunnablePassthrough,
+  RunnableSequence,
 } from '@langchain/core/runnables';
 
 @Injectable()
@@ -136,6 +137,24 @@ export class StudyRunnableService {
 
     const runnableAssign = new RunnableAssign({ mapper: rrr });
     console.log('=>res', await runnableAssign.pipe(chain).invoke({ b: 222 }));
+  }
+
+  /**
+   * sequence
+   */
+  async sequence() {
+    const chain = await this.generateQuestionChain();
+
+    const sequenceChain = RunnableSequence.from([
+      {
+        a: () => 1,
+        b: () => 2,
+      },
+      chain,
+    ]);
+
+    const res = await sequenceChain.invoke({});
+    console.log('=>(study.runnable.service.ts 158) res', res);
   }
 
   /**
