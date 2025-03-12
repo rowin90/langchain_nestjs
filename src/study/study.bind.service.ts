@@ -39,14 +39,16 @@ export class StudyBindService {
     console.log('=>(study.bind.service.ts 39) res', res);
   }
 
-  /**
-   * @deprecated
-   */
-  ramadaBind(location: string, unit: string) {
-    function get_weather({ location, unit }) {
-      return `${location}天气为24${unit}`;
+  async ramadaBind() {
+    function get_weather(location, config: any) {
+      return `${location}天气为24${config.unit}`;
     }
 
-    const get_weather_runnable = RunnableLambda.from(get_weather);
+    const get_weather_runnable = RunnableLambda.from(get_weather).bind({
+      unit: '摄氏度',
+    });
+
+    const res = await get_weather_runnable.invoke('北京');
+    console.log('=>(study.bind.service.ts 55) res', res);
   }
 }
