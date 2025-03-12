@@ -5,6 +5,7 @@ import { StudyOutputParseService } from './study.output.parse.service';
 import { StudyRunnableService } from './study.runnable.service';
 import { StudyCallbacksService } from './study.callbacks.service';
 import { StudyMemoryService } from './study.memory.service';
+import { StudyBindService } from './study.bind.service';
 
 @Module({
   providers: [
@@ -14,6 +15,7 @@ import { StudyMemoryService } from './study.memory.service';
     StudyRunnableService,
     StudyCallbacksService,
     StudyMemoryService,
+    StudyBindService,
   ],
 })
 export class StudyModule {}
