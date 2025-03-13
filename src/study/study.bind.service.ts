@@ -1,9 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { ChatPromptTemplate } from '@langchain/core/prompts';
+import {
+  ChatPromptTemplate,
+  HumanMessagePromptTemplate,
+  MessagesPlaceholder,
+  SystemMessagePromptTemplate,
+} from '@langchain/core/prompts';
 import { ChatOpenAI } from '@langchain/openai';
 import { ConfigService } from '@nestjs/config';
-import { RunnableSequence, RunnableLambda } from '@langchain/core/runnables';
+import {
+  RunnableSequence,
+  RunnableLambda,
+  RunnableConfig,
+  RunnablePassthrough,
+} from '@langchain/core/runnables';
 import { StringOutputParser } from '@langchain/core/output_parsers';
+import { BufferWindowMemory, BaseChatMemory } from 'langchain/memory';
 
 @Injectable()
 export class StudyBindService {
@@ -97,5 +108,57 @@ export class StudyBindService {
 
     const res = await retry_chain.invoke(2);
     console.log('=>(study.bind.service.ts 55) res', res);
+  }
+
+  /**
+   * autoMemory 可以实现自动记忆功能
+   */
+  async autoMemory() {
+    const chatPrompt = ChatPromptTemplate.fromMessages([
+      SystemMessagePromptTemplate.fromTemplate(
+        'The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know.',
+      ),
+      new MessagesPlaceholder('history'),
+      HumanMessagePromptTemplate.fromTemplate('{input}'),
+    ]);
+
+    function count(x: any, config: any) {
+      // todo 可以自己加记忆   const m = this.getMemory();
+      // if (config?.memory) {
+      //   console.log('config?.memory', config?.memory);
+      //   // 调用 memory 加载记忆
+      //   // const mem = memory.loadMemoryVariables({input:''})
+      // }
+
+      // return
+
+      return { history: config.configurable.memory, x };
+    }
+
+    const retry_chain = RunnableSequence.from([
+      RunnableLambda.from(count),
+      RunnablePassthrough.assign({
+        text: () => 1,
+        input: new RunnablePassthrough(),
+      }),
+      // chatPrompt,
+    ]).withListeners({
+      onEnd: () => {
+        // save_memory() 存储记忆
+        console.log('执行结束');
+      },
+    });
+
+    const res = await retry_chain.invoke(
+      { input: 2 },
+      {
+        configurable: { memory: '这是历史消息' },
+      },
+    );
+    console.log('=>(study.bind.service.ts 55) res', res);
+  }
+
+  getMemory(m = {}): BaseChatMemory {
+    return new BufferWindowMemory({ memoryKey: 'history', k: 2 });
   }
 }
