@@ -39,6 +39,9 @@ export class StudyBindService {
     console.log('=>(study.bind.service.ts 39) res', res);
   }
 
+  /**
+   * ramadaBind
+   */
   async ramadaBind() {
     function get_weather(location, config: any) {
       return `${location}天气为24${config.unit}`;
@@ -49,6 +52,50 @@ export class StudyBindService {
     });
 
     const res = await get_weather_runnable.invoke('北京');
+    console.log('=>(study.bind.service.ts 55) res', res);
+  }
+
+  /**
+   * withRetry，withFallbacks，withListeners
+   */
+  async retry() {
+    let counter = -1;
+
+    function count(x: number) {
+      counter += 1;
+      console.log(`当前的值为counter: ${counter}`);
+      const random = Math.random();
+      console.log('=>(study.bind.service.ts 68) random', random);
+      if (random > 0.1) {
+        throw new Error('counter is too high');
+      }
+    }
+
+    const retry_chain = RunnableLambda.from(count)
+      .withRetry({
+        stopAfterAttempt: 4,
+        onFailedAttempt: (err, attempt) => {
+          console.log(`第${attempt}次尝试失败，错误信息为：${err.message}`);
+        },
+      })
+      .withFallbacks([
+        RunnableLambda.from(() => {
+          console.log('fall back');
+        }),
+      ])
+      .withListeners({
+        onStart: () => {
+          console.log('开始执行');
+        },
+        onEnd: () => {
+          console.log('执行结束');
+        },
+        onError: (err) => {
+          console.log('执行错误', err);
+        },
+      });
+
+    const res = await retry_chain.invoke(2);
     console.log('=>(study.bind.service.ts 55) res', res);
   }
 }
