@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
 import { CacheBackedEmbeddings } from 'langchain/embeddings/cache_backed';
 import { LocalFileStore } from 'langchain/storage/file_system';
-import * as path from 'path';
 
 @Injectable()
 export class StudyRAGService {
