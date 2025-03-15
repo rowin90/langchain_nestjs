@@ -37,10 +37,45 @@ export class StudyHuggingFaceService {
   async faiss() {
     // 情感分析
     const db = await FaissStore.fromTexts(
-      ['我是一只晓晓宝'],
+      ['我是一只晓晓宝', '今年3岁', '我喜欢读书，古诗'],
       { page: 1 },
       this.embeddingsModel,
     );
-    console.log('=>(study.huggingface.service.ts 39) db', db);
+    console.log(db._index.ntotal()); //  3
+    // const res = await db.similaritySearch('我喜欢篮球');
+    const res = await db.similaritySearchWithScore('我喜欢篮球');
+    db.save('./faiss_index');
+    console.log('=>(study.huggingface.service.ts 46) res', res);
+    /**
+     * [
+     *   Document {
+     *     pageContent: '我是一只晓晓宝',
+     *     metadata: { page: 1 },
+     *     id: undefined
+     *   },
+     *   Document {
+     *     pageContent: '今年3岁',
+     *     metadata: { page: 1 },
+     *     id: undefined
+     *   },
+     *   Document {
+     *     pageContent: '我喜欢读书，古诗',
+     *     metadata: { page: 1 },
+     *     id: undefined
+     *   }
+     * ]
+     */
+    // db.asRetriever();
+    // console.log('=>(study.huggingface.service.ts 39) db', db);
+  }
+
+  /**
+   * faiss_load
+   */
+  async faiss_load() {
+    // 情感分析
+    const db = await FaissStore.load('./faiss_index', this.embeddingsModel);
+    const res = await db.similaritySearchWithScore('我喜欢篮球', 2);
+    console.log('=>(study.huggingface.service.ts 46) res', res);
   }
 }
