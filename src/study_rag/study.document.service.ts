@@ -2,6 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
 import { UnstructuredLoader } from '@langchain/community/document_loaders/fs/unstructured';
+import { BaseDocumentLoader } from 'langchain/document_loaders/base';
+import { Document } from '@langchain/core/documents';
+import {
+  CharacterTextSplitter,
+  RecursiveCharacterTextSplitter,
+} from 'langchain/text_splitter';
 
 @Injectable()
 export class StudyDocumentService {
@@ -30,13 +36,15 @@ export class StudyDocumentService {
   async mdLoader() {
     const apiKey = await this.configService.get('UNSTRUCTURED_API_KEY');
     const apiUrl = await this.configService.get('UNSTRUCTURED_API_BASE_URL');
-    const mdloader = new UnstructuredLoader('./doc/api.md', {
+    const mdloader = new UnstructuredLoader('./doc/example.txt', {
       apiKey,
       apiUrl,
       encoding: 'utf-8',
     });
     const docs = await mdloader.load();
+    console.log('=>(study.document.service.ts 24) docs', docs);
     console.log('=>(study.document.service.ts 24) docs', docs[0].pageContent);
+    console.log('=>(study.document.service.ts 24) len', docs.length);
     console.log('=>(study.document.service.ts 24) docs', docs[0].metadata);
   }
 
@@ -49,7 +57,72 @@ export class StudyDocumentService {
       encoding: 'utf-8',
     });
     const docs = await xlxLoader.load();
+    console.log('=>(study.document.service.ts 24) docs', docs);
+    console.log('=>(study.document.service.ts 24) len', docs.length);
     console.log('=>(study.document.service.ts 24) docs', docs[0].pageContent);
     console.log('=>(study.document.service.ts 24) docs', docs[0].metadata);
+  }
+
+  /**
+   * 自定义文档加载器
+   */
+  async customLoader() {
+    const cusLoader = new CustomDocumentLoader('./doc/巴乔明细.xlsx');
+    const docs = await cusLoader.load();
+    console.log('=>(study.document.service.ts 24) docs', docs[0].pageContent);
+    console.log('=>(study.document.service.ts 24) docs', docs[0].metadata);
+  }
+
+  /**
+   * 分割器
+   */
+  async textSplit() {
+    const text = new TextLoader('./doc/example.txt');
+    const docs = await text.load();
+    const splitter = new CharacterTextSplitter({
+      chunkSize: 200,
+      chunkOverlap: 20,
+    });
+    const splitDocs = await splitter.splitDocuments(docs);
+    splitDocs.forEach((doc: Document) => {
+      console.log('块大小', doc.pageContent.length);
+    });
+    console.log('=>(study.document.service.ts 81) splitDocs', splitDocs.length);
+  }
+
+  /**
+   * 递归分割器
+   */
+  async reTextSplit() {
+    const text = new TextLoader('./doc/example.txt');
+    const docs = await text.load();
+    const splitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 200,
+      chunkOverlap: 20,
+    });
+    const splitDocs = await splitter.splitDocuments(docs);
+    splitDocs.forEach((doc: Document) => {
+      console.log('块大小', doc.pageContent.length);
+    });
+    console.log('=>(study.document.service.ts 81) splitDocs', splitDocs.length);
+  }
+}
+
+/**
+ * 自定义文档加载器
+ */
+class CustomDocumentLoader extends BaseDocumentLoader {
+  constructor(public filePath: string) {
+    super();
+  }
+
+  async load(): Promise<Document[]> {
+    const docs = [
+      {
+        pageContent: 'Hello world',
+        metadata: { source: this.filePath },
+      },
+    ];
+    return docs;
   }
 }
