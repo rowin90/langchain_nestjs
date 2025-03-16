@@ -12,6 +12,7 @@ import { AgentModule } from './agent/agent.module';
 
 import { StudyModule } from './study/study.module';
 import { StudyRagModule } from './study_rag/study.rag.module';
+import { StudyAgentModule } from './study_agent/study.agent.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,6 +27,7 @@ import { StudyRagModule } from './study_rag/study.rag.module';
     AgentModule,
     StudyModule,
     StudyRagModule,
+    StudyAgentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
