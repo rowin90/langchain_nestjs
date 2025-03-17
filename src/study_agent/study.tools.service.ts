@@ -159,25 +159,25 @@ export class StudyToolsService {
       { role: 'user', content: '{question}' },
     ]);
 
+    const outputSchema = z.object({
+      question: z.string().describe('假设性问题'),
+      answer: z.string().describe('假设性答案'),
+    });
+
     const llm = new ChatOpenAI({
       modelName: 'gpt-3.5-turbo-16k',
       configuration: {
         baseURL: this.configService.get('OPENAI_API_BASE_URL'),
       },
-    }).withStructuredOutput(
-      (z.object({
-        question: z.string().describe('假设性问题'),
-        answer: z.string().describe('假设性答案'),
-      }),
-      {}),
-    );
+    }).withStructuredOutput(outputSchema, { strict: true });
 
     const chain = RunnableSequence.from([prompt, llm]);
 
     const res = await chain.invoke({
-      question: '我叫晓晓宝，我今年3岁了',
+      question: '我喜欢打篮球,今天天气很好，是大晴天',
     });
 
     console.log('=>res', res);
+    // =>res { question: '今天天气如何？', answer: '是大晴天'
   }
 }
