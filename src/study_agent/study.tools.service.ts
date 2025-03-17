@@ -6,7 +6,8 @@ import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { FunctionMessage } from '@langchain/core/messages';
 import { ChatOpenAI } from '@langchain/openai';
 import { ConfigService } from '@nestjs/config';
-import { RunnableSequence } from '@langchain/core/runnables';
+import { RunnableSequence, RunnableConfig } from '@langchain/core/runnables';
+import { StructuredTool } from '@langchain/core/tools';
 
 @Injectable()
 export class StudyToolsService {
@@ -150,6 +151,9 @@ export class StudyToolsService {
     console.log('=>res', res);
   }
 
+  /**
+   * 强制提取结果格式，其实也就是方便了调用，本质上还是 调用工具函数，强制调用
+   */
   async chainWithStructuredOutput() {
     const prompt = await ChatPromptTemplate.fromMessages([
       {
@@ -179,5 +183,63 @@ export class StudyToolsService {
 
     console.log('=>res', res);
     // =>res { question: '今天天气如何？', answer: '是大晴天'
+  }
+
+  /**
+   * 函数工具调用失败捕获
+   */
+  async tryToolsErr(query = 'Today is how many days from 2024-03-16') {
+    const prompt = await ChatPromptTemplate.fromMessages([
+      {
+        role: 'system',
+        content: `你是OpenAI开发的聊天机器人，请回答用户的问题，如果需要可以调用工具函数`,
+      },
+      { role: 'user', content: '{question}' },
+    ]);
+
+    const tool = this._getDateDiffTool();
+
+    const complex_tool = (tool_args, config?: RunnableConfig) => {
+      try {
+        return tool.invoke(tool_args, config);
+      } catch (e) {
+        return `调用工具时应引发错误,参数${tool_args},错误原因:${e.type}:${e.message}`;
+      }
+    };
+
+    /**
+     * 也是将普通函数转化函数工具的一种方法，但js版本的这个多此一举，不如直接new DynamicStructuredTool
+     */
+    class complexTool extends StructuredTool {
+      name = 'date-difference-calculator';
+      description = '计算两个日期之间的天数差';
+      schema = z.object({
+        date1: z.string().describe('第一个日期，以YYYY-MM-DD格式表示'),
+        date2: z.string().describe('第二个日期，以YYYY-MM-DD格式表示'),
+      });
+
+      async _call({ date1, date2 }) {
+        const d1 = new Date(date1);
+        const d2 = new Date(date2);
+        const difference = Math.abs(d2.getTime() - d1.getTime());
+        const days = Math.ceil(difference / (1000 * 60 * 60 * 24));
+        return days.toString();
+      }
+    }
+
+    const llmWithTools = new ChatOpenAI({
+      modelName: 'gpt-3.5-turbo-16k',
+      configuration: {
+        baseURL: this.configService.get('OPENAI_API_BASE_URL'),
+      },
+    }).bindTools([complexTool], { tool_choice: 'auto' });
+
+    // const parser = new StringOutputParser();
+
+    const chain = RunnableSequence.from([prompt, llmWithTools]);
+
+    const res = await chain.invoke({
+      question: query,
+    });
   }
 }
