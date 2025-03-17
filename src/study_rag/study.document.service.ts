@@ -106,6 +106,27 @@ export class StudyDocumentService {
     });
     console.log('=>(study.document.service.ts 81) splitDocs', splitDocs.length);
   }
+
+  /**
+   * 递归分割器
+   */
+  async reCodeSplit() {
+    const text = new TextLoader('./doc/start.js');
+    const docs = await text.load();
+    const splitter = RecursiveCharacterTextSplitter.fromLanguage('js', {
+      chunkSize: 200,
+      chunkOverlap: 20,
+    });
+    const splitDocs = await splitter.splitDocuments(docs);
+    splitDocs.forEach((doc: Document) => {
+      console.log('块大小', doc.pageContent.length);
+    });
+    console.log('=>(study.document.service.ts 81) splitDocs', splitDocs);
+    console.log(
+      '=>(study.document.service.ts 81) splitDocs.length',
+      splitDocs.length,
+    );
+  }
 }
 
 /**

@@ -3,10 +3,10 @@ import { DuckDuckGoSearch } from '@langchain/community/tools/duckduckgo_search';
 import { DynamicTool, DynamicStructuredTool } from '@langchain/core/tools';
 import { z } from 'zod';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
+import { FunctionMessage } from '@langchain/core/messages';
 import { ChatOpenAI } from '@langchain/openai';
 import { ConfigService } from '@nestjs/config';
 import { RunnableSequence } from '@langchain/core/runnables';
-import { StringOutputParser } from '@langchain/core/output_parsers';
 
 @Injectable()
 export class StudyToolsService {
@@ -75,7 +75,7 @@ export class StudyToolsService {
     console.log('=>(study.tools.service.ts 61) res', res);
   }
 
-  async chainWithTool() {
+  async chainWithTool(query = 'Today is how many days from 2024-03-16') {
     const prompt = await ChatPromptTemplate.fromMessages([
       {
         role: 'system',
@@ -85,6 +85,12 @@ export class StudyToolsService {
     ]);
 
     const tool = this._getDateDiffTool();
+    const llm = new ChatOpenAI({
+      modelName: 'gpt-3.5-turbo-16k',
+      configuration: {
+        baseURL: this.configService.get('OPENAI_API_BASE_URL'),
+      },
+    });
     const llmWithTools = new ChatOpenAI({
       modelName: 'gpt-3.5-turbo-16k',
       configuration: {
@@ -97,7 +103,7 @@ export class StudyToolsService {
     const chain = RunnableSequence.from([prompt, llmWithTools]);
 
     const res = await chain.invoke({
-      question: 'Today is how many days from 2024-03-16',
+      question: query,
     });
 
     /**
@@ -119,6 +125,7 @@ export class StudyToolsService {
       // 没有调用工具
       console.log(res.content);
     } else {
+      const message = (await prompt.invoke(query)).toChatMessages();
       for (const tool_call of tool_calls) {
         const tool = tool_call.name;
         const args = tool_call.args;
@@ -130,12 +137,46 @@ export class StudyToolsService {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         const res = await tool.invoke(args);
+        message.push(new FunctionMessage(res));
         console.log('=>tool_id', tool_id);
         console.log('=>tool', tool);
         console.log('=>args', args);
         console.log('=>res', res);
       }
+
+      // 最后再把工具的结果返回回去，调用LLM
+      return await llm.invoke(message);
     }
+    console.log('=>res', res);
+  }
+
+  async chainWithStructuredOutput() {
+    const prompt = await ChatPromptTemplate.fromMessages([
+      {
+        role: 'system',
+        content: `你是OpenAI开发的聊天机器人，请从用户的描述中提取假设性问题和答案`,
+      },
+      { role: 'user', content: '{question}' },
+    ]);
+
+    const llm = new ChatOpenAI({
+      modelName: 'gpt-3.5-turbo-16k',
+      configuration: {
+        baseURL: this.configService.get('OPENAI_API_BASE_URL'),
+      },
+    }).withStructuredOutput(
+      (z.object({
+        question: z.string().describe('假设性问题'),
+        answer: z.string().describe('假设性答案'),
+      }),
+      {}),
+    );
+
+    const chain = RunnableSequence.from([prompt, llm]);
+
+    const res = await chain.invoke({
+      question: '我叫晓晓宝，我今年3岁了',
+    });
 
     console.log('=>res', res);
   }
