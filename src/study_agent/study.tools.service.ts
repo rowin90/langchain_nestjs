@@ -7,7 +7,7 @@ import { FunctionMessage } from '@langchain/core/messages';
 import { ChatOpenAI } from '@langchain/openai';
 import { ConfigService } from '@nestjs/config';
 import { RunnableSequence, RunnableConfig } from '@langchain/core/runnables';
-import { StructuredTool } from '@langchain/core/tools';
+import { StructuredTool, tool } from '@langchain/core/tools';
 
 @Injectable()
 export class StudyToolsService {
@@ -29,12 +29,15 @@ export class StudyToolsService {
   }
 
   async dynamicTool() {
-    const stringReverseTool = new DynamicTool({
-      name: 'string-reverser',
-      description:
-        'reverses a string. input should be the string you want to reverse.',
-      func: async (input: string) => input.split('').reverse().join(''),
-    });
+    const stringReverseTool = tool(
+      async (input: string) => input.split('').reverse().join(''),
+      {
+        name: 'string-reverser',
+        description:
+          'reverses a string. input should be the string you want to reverse.',
+        schema: z.string().describe('The string you want to reverser'),
+      },
+    );
 
     const res = await stringReverseTool.invoke('hello world');
     console.log(
