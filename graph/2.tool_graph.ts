@@ -13,6 +13,7 @@ import { Annotation, messagesStateReducer } from '@langchain/langgraph';
 
 import { ChatOpenAI } from '@langchain/openai';
 import { ToolMessage, HumanMessage } from '@langchain/core/messages';
+import { ToolNode } from '@langchain/langgraph/prebuilt';
 
 import 'dotenv/config';
 
@@ -48,6 +49,9 @@ const chatbot = async (
   };
 };
 
+/**
+ * @description  等价于  new ToolNode(tools)
+ */
 const tool_executor = async (
   state: typeof StateAnnotation.State,
   _config: RunnableConfig,
