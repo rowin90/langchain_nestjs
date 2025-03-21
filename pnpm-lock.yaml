@@ -17,9 +17,12 @@ dependencies:
   '@langchain/langgraph':
     specifier: ^0.2.56
     version: 0.2.56(@langchain/core@0.3.42)
+  '@langchain/langgraph-checkpoint':
+    specifier: ^0.0.16
+    version: 0.0.16(@langchain/core@0.3.42)
   '@langchain/langgraph-cli':
     specifier: ^0.0.17
-    version: 0.0.17(@langchain/core@0.3.42)(@langchain/langgraph-checkpoint@0.0.15)(@langchain/langgraph@0.2.56)(openai@4.86.1)(typescript@5.8.2)
+    version: 0.0.17(@langchain/core@0.3.42)(@langchain/langgraph-checkpoint@0.0.16)(@langchain/langgraph@0.2.56)(openai@4.86.1)(typescript@5.8.2)
   '@langchain/openai':
     specifier: ^0.3.17
     version: 0.3.17(@langchain/core@0.3.42)
@@ -1848,7 +1851,7 @@ packages:
       - openai
     dev: false
 
-  /@langchain/langgraph-api@0.0.17(@langchain/core@0.3.42)(@langchain/langgraph-checkpoint@0.0.15)(@langchain/langgraph@0.2.56)(openai@4.86.1)(typescript@5.8.2):
+  /@langchain/langgraph-api@0.0.17(@langchain/core@0.3.42)(@langchain/langgraph-checkpoint@0.0.16)(@langchain/langgraph@0.2.56)(openai@4.86.1)(typescript@5.8.2):
     resolution: {integrity: sha512-Ex31B9bc+wjUpmCGLvcd5hzC7qRE/l3jEes5lA/EtUG68rTIQcvnaNdn9RFUhx897edTOVqEYVcwM2c9mdwluQ==}
     engines: {node: ^18.19.0 || >=20.16.0}
     peerDependencies:
@@ -1862,7 +1865,7 @@ packages:
       '@hono/zod-validator': 0.2.2(hono@4.7.4)(zod@3.24.2)
       '@langchain/core': 0.3.42(openai@4.86.1)
       '@langchain/langgraph': 0.2.56(@langchain/core@0.3.42)
-      '@langchain/langgraph-checkpoint': 0.0.15(@langchain/core@0.3.42)
+      '@langchain/langgraph-checkpoint': 0.0.16(@langchain/core@0.3.42)
       '@types/json-schema': 7.0.15
       '@typescript/vfs': 1.6.1(typescript@5.8.2)
       dedent: 1.5.3
@@ -1887,16 +1890,6 @@ packages:
       - supports-color
     dev: false
 
-  /@langchain/langgraph-checkpoint@0.0.15(@langchain/core@0.3.42):
-    resolution: {integrity: sha512-AiJkvsYHqNbCh1Tx823qs2lf2qRqeB4EAMejirOk8gkpPszAGYua5c3niKYkcKR2tU8Snhrmj7Gm9HKZSFOXyw==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@langchain/core': '>=0.2.31 <0.4.0'
-    dependencies:
-      '@langchain/core': 0.3.42(openai@4.86.1)
-      uuid: 10.0.0
-    dev: false
-
   /@langchain/langgraph-checkpoint@0.0.16(@langchain/core@0.3.42):
     resolution: {integrity: sha512-B50l7w9o9353drHsdsD01vhQrCJw0eqvYeXid7oKeoj1Yye+qY90r97xuhiflaYCZHM5VEo2oaizs8oknerZsQ==}
     engines: {node: '>=18'}
@@ -1907,14 +1900,14 @@ packages:
       uuid: 10.0.0
     dev: false
 
-  /@langchain/langgraph-cli@0.0.17(@langchain/core@0.3.42)(@langchain/langgraph-checkpoint@0.0.15)(@langchain/langgraph@0.2.56)(openai@4.86.1)(typescript@5.8.2):
+  /@langchain/langgraph-cli@0.0.17(@langchain/core@0.3.42)(@langchain/langgraph-checkpoint@0.0.16)(@langchain/langgraph@0.2.56)(openai@4.86.1)(typescript@5.8.2):
     resolution: {integrity: sha512-2ajqmFCd6VK0hA0HACygoT1By1Tf5xZwb6uEF7d0LuWUKfZVedBqgik96W457twhahfoJt7EgEInRNe+W7Jl+g==}
     engines: {node: ^18.19.0 || >=20.16.0}
     hasBin: true
     dependencies:
       '@babel/code-frame': 7.26.2
       '@commander-js/extra-typings': 13.1.0(commander@13.1.0)
-      '@langchain/langgraph-api': 0.0.17(@langchain/core@0.3.42)(@langchain/langgraph-checkpoint@0.0.15)(@langchain/langgraph@0.2.56)(openai@4.86.1)(typescript@5.8.2)
+      '@langchain/langgraph-api': 0.0.17(@langchain/core@0.3.42)(@langchain/langgraph-checkpoint@0.0.16)(@langchain/langgraph@0.2.56)(openai@4.86.1)(typescript@5.8.2)
       chokidar: 4.0.3
       commander: 13.1.0
       dedent: 1.5.3
