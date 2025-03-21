@@ -2,9 +2,13 @@ import { ChatOpenAI } from '@langchain/openai';
 import { tool } from '@langchain/core/tools';
 import { z } from 'zod';
 import { createReactAgent } from '@langchain/langgraph/prebuilt';
+import 'dotenv/config';
 
 const model = new ChatOpenAI({
-  model: 'gpt-4o',
+  modelName: 'gpt-3.5-turbo-16k',
+  configuration: {
+    baseURL: process.env.OPENAI_API_BASE_URL,
+  },
 });
 
 const getWeather = tool(
@@ -30,9 +34,12 @@ const inputs = {
   messages: [{ role: 'user', content: 'what is the weather in SF?' }],
 };
 
-const stream = await agent.stream(inputs, { streamMode: 'values' });
+// 调用 graph
+(async function () {
+  const stream = await agent.stream(inputs, { streamMode: 'values' });
 
-for await (const { messages } of stream) {
-  console.log(messages);
-}
+  for await (const { messages } of stream) {
+    console.log(messages);
+  }
+})();
 // Returns the messages in the state at each step of execution
