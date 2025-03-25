@@ -26,7 +26,7 @@ const customAdd = () => {
     messages: [
       {
         role: 'assistant',
-        content: `my name is youyou`,
+        content: `my name is custom`,
       },
     ],
   };

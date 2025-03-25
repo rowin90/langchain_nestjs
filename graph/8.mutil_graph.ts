@@ -8,8 +8,8 @@ import { createReactAgent } from '@langchain/langgraph/prebuilt';
 import { StateGraph } from '@langchain/langgraph';
 import { BaseMessage, BaseMessageLike } from '@langchain/core/messages';
 import { Annotation, messagesStateReducer,START,END } from '@langchain/langgraph';
-import { toolsCondition } from '@langchain/langgraph/prebuilt';
-import { ChatPromptTemplate ,MessagesPlaceholder,SystemMessagePromptTemplate} from '@langchain/core/prompts'
+import { toolsCondition,ToolNode } from '@langchain/langgraph/prebuilt';
+import { ChatPromptTemplate ,MessagesPlaceholder,SystemMessagePromptTemplate,HumanMessagePromptTemplate} from '@langchain/core/prompts'
 import { StringOutputParser} from '@langchain/core/output_parsers'
 
 import 'dotenv/config';
@@ -32,19 +32,11 @@ const AgentState = Annotation.Root({
     reducer: reduce_str,
     default: () => [],
   }),
-  // live_content_messages: Annotation<BaseMessage[], BaseMessageLike[]>({
-  //   reducer: messagesStateReducer,
-  //   default: () => [],
-  // }),
   xhs_content: Annotation<string[]>({
     // 小红书文案
     reducer: reduce_str,
     default: () => [],
   }),
-  // xhs_content_messages: Annotation<BaseMessage[], BaseMessageLike[]>({
-  //   reducer: messagesStateReducer,
-  //   default: () => [],
-  // }),
 });
 
 const model = new ChatOpenAI({
@@ -81,12 +73,18 @@ const chatbot_live_agent = new StateGraph(AgentState)
 
 
 const chatbot_xhs = (state:typeof AgentState.State,config:RunnableConfig){
-  const prompt =  ChatPromptTemplate.fromTemplate(`
-    你是一个小红书文案大师，请根据用户传递的商品名，生成一篇关于该商品的小红书笔记文案，注意风格活泼，多使用emoji表情。
-    
-    问题:{query}
-   
-  `)
+  // const prompt =  ChatPromptTemplate.fromTemplate(`
+  //   你是一个小红书文案大师，请根据用户传递的商品名，生成一篇关于该商品的小红书笔记文案，注意风格活泼，多使用emoji表情。
+  //
+  //   问题:{query}
+  //
+  // `)
+
+  const prompt =  ChatPromptTemplate.fromMessages([
+    new SystemMessagePromptTemplate('你是一个小红书文案大师，请根据用户传递的商品名，生成一篇关于该商品的小红书笔记文案，注意风格活泼，多使用emoji表情/'),
+    new MessagesPlaceholder('history'),
+    new HumanMessagePromptTemplate('{query}')
+  ])
 
   const chain = prompt.pipe(model).pipe(new StringOutputParser())
   const res = await chain.invoke({
