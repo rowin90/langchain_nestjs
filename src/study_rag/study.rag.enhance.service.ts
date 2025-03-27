@@ -23,6 +23,7 @@ export class StudyRagEnhanceService {
     });
 
     this.llm = new ChatOpenAI({
+      temperature: 0.1,
       configuration: {
         baseURL: this.configService.get('OPENAI_API_BASE_URL'),
       },
@@ -57,8 +58,12 @@ export class StudyRagEnhanceService {
 
     const docs = await multi_query_retriever.invoke(
       '关于LLMOps应用配置的文档有哪些',
+      { configurable: { temperature: 0.3 } },
     );
     console.log('=>(study.rag.enhance.service.ts 50) docs', docs);
+    for (const doc of docs) {
+      console.log('=>(study.rag.enhance.service.ts 50) doc', doc.pageContent);
+    }
     console.log('=>(study.rag.enhance.service.ts 50) length', docs.length);
   }
 }
