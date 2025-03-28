@@ -80,6 +80,9 @@ export class StudyHuggingFaceService {
     console.log('=>(study.huggingface.service.ts 46) res', res);
   }
 
+  /**
+   * 转化成向量存储在本地faiss
+   */
   async verctor() {
     const documents = [
       new Document({
