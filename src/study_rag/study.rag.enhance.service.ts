@@ -41,7 +41,10 @@ export class StudyRagEnhanceService {
     );
     // 转化成检索器
     // FAISS 不支持 mmr
-    const retriever = db.asRetriever({ searchType: 'similarity' });
+    const retriever = db.asRetriever({
+      searchType: 'similarity',
+      k: 10,
+    });
     const multi_query_retriever = MultiQueryRetriever.fromLLM({
       retriever,
       llm: this.llm,
