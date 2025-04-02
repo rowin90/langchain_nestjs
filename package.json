@@ -10,6 +10,8 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "repl:dev": "nest start --watch --entryFile repl",
     "graph": "npx @langchain/langgraph-cli dev",
+    "mcp:inspector": "npx @modelcontextprotocol/inspector node ./mcp/mcp.server.js",
+    "mcp": "tsx ./mcp/mcp.client.ts",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
