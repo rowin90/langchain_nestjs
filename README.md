@@ -20,7 +20,13 @@ RAG使用的是 ollama 提供的 Embedding 模型，需要打开
 - 直接 tsx .graph/langgraph.tsx
 
 # mcp
+1. 代码中纯链
 - 在 mcp 文件夹下
 - 注意需要修改 package.json 文件中的 type 为 module
 ` Top-level await is currently not supported with the "cjs" output format`
 - 然后运行 tsx  ./mcp/mcp.client.ts 即可
+![mcp运行记录](./images/langsmith/mcp.png)
+
+2. mcp官方提供检测工具
+- 执行 ` npx @modelcontextprotocol/inspector node ./mcp/mcp.server.js`
+![mcp运行记录](./images/mcp_inspector.png)
