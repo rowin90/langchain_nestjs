@@ -13,6 +13,7 @@ import { AgentModule } from './agent/agent.module';
 import { StudyModule } from './study/study.module';
 import { StudyRagModule } from './study_rag/study.rag.module';
 import { StudyAgentModule } from './study_agent/study.agent.module';
+import { StudyVectorstoreModule } from './study_vectorstore/study.vectorstore.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +29,7 @@ import { StudyAgentModule } from './study_agent/study.agent.module';
     StudyModule,
     StudyRagModule,
     StudyAgentModule,
+    StudyVectorstoreModule,
   ],
   controllers: [AppController],
   providers: [AppService],

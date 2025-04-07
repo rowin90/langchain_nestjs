@@ -53,7 +53,7 @@ const documents = [
  * 先在里面添加了测试数据向量
  */
 @Injectable()
-export class StudyVectorstoreService {
+export class StudyPineconeService {
   private embeddingsModel: OllamaEmbeddings;
   private llm: ChatOpenAI;
 
