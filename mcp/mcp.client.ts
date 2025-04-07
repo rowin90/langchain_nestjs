@@ -1,6 +1,6 @@
 /**
  *
- * 注意需要修改 package.json 文件中的 type 为 module !!!
+ * * 注意需要修改 package.json 文件中的 type 为 module !!!
  */
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
@@ -21,14 +21,12 @@ const model = new ChatOpenAI({
 });
 
 // Create transport for stdio connection
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const dirname = import.meta.url;
 const transport = new StdioClientTransport({
   command: 'node',
-  args: [
-    path.resolve(
-      path.dirname(fileURLToPath(import.meta.url)),
-      './mcp.server.js',
-    ),
-  ],
+  args: [path.resolve(path.dirname(fileURLToPath(dirname)), './mcp.server.js')],
 });
 
 // Initialize the client
