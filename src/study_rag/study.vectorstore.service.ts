@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
-import { MultiQueryRetriever } from 'langchain/retrievers/multi_query';
-import { FaissStore } from '@langchain/community/vectorstores/faiss';
-import { BM25Retriever } from '@langchain/community/retrievers/bm25';
-import { EnsembleRetriever } from 'langchain/retrievers/ensemble';
 import { ChatOpenAI } from '@langchain/openai';
 import { ConfigService } from '@nestjs/config';
-import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { Document } from '@langchain/core/documents';
 import { PineconeEmbeddings, PineconeStore } from '@langchain/pinecone';
 
@@ -53,6 +48,10 @@ const documents = [
   }),
 ];
 
+/**
+ * 先访问 https://app.pinecone.io/organizations/-OMZvN95jJThIY57JTD0/projects/a28b80e6-2c2d-448e-baf1-bdb5c9b13f91/indexes
+ * 先在里面添加了测试数据向量
+ */
 @Injectable()
 export class StudyVectorstoreService {
   private embeddingsModel: OllamaEmbeddings;
@@ -100,7 +99,7 @@ export class StudyVectorstoreService {
   }
 
   /**
-   * 多查询检索器
+   * pineconeStore查询
    */
   async pineconeStore() {
     // const embeddings = new PineconeEmbeddings({
@@ -115,7 +114,7 @@ export class StudyVectorstoreService {
         config: {
           apiKey: this.configService.get('PINECONE_API_KEY'),
         },
-        // namespace: 'dataset',
+        namespace: 'dataset',
         // namespace: 'dataset',
       },
     });
