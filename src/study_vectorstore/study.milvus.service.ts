@@ -4,6 +4,7 @@ import { ChatOpenAI } from '@langchain/openai';
 import { ConfigService } from '@nestjs/config';
 import { Document } from '@langchain/core/documents';
 import { MilvusClient } from '@zilliz/milvus2-sdk-node';
+import { Milvus } from '@langchain/community/vectorstores/milvus';
 
 @Injectable()
 export class StudyMilvusService {
@@ -130,4 +131,57 @@ export class StudyMilvusService {
     });
     console.log('=>(study.milvus.service.ts 124) result', result);
   }
+
+  /**
+   * 向量插入
+   */
+  async embed() {
+    await this.milvusClient.useDatabase({ db_name: 'test' });
+    const data = [
+      {
+        name: '你好',
+        name_vector: await this.embeddingsModel.embedQuery('你好'),
+      },
+    ];
+    const res = await this.milvusClient.insert({
+      collection_name: 'art',
+      fields_data: data,
+    });
+    console.log('=>(study.milvus.service.ts 146) res', res);
+  }
+
+  // async store() {
+  //   await this.milvusClient.useDatabase({ db_name: 'langchain_milvus' });
+  //   const vectorStore = new Milvus(this.embeddingsModel, {
+  //     collectionName: 'text',
+  //     // partitionName?: string;
+  //     // primaryField?: string;
+  //     vectorField: 'text_vector',
+  //     // textField?: string;
+  //     // url?: string;
+  //     // ssl?: boolean;
+  //     // username?: string;
+  //     // password?: string;
+  //     // textFieldMaxLength?: number;
+  //     clientConfig: {
+  //       address: 'localhost:19530',
+  //       timeout: 5000,
+  //     },
+  //
+  //     // autoId?: boolean;
+  //     // indexCreateOptions?: IndexCreateOptions;
+  //     // partitionKey?: string;
+  //     // partitionKeyMaxLength?: number;
+  //   });
+  //
+  //   const res = await vectorStore.addDocuments([
+  //     {
+  //       pageContent: '你好',
+  //       metadata: {
+  //         name: '你好',
+  //       },
+  //     },
+  //   ]);
+  //   console.log('=>(study.milvus.service.ts 185) res', res);
+  // }
 }
