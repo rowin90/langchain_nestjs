@@ -135,12 +135,14 @@ export class StudyMilvusService {
   /**
    * 向量插入
    */
-  async embed() {
+  async insert() {
     await this.milvusClient.useDatabase({ db_name: 'test' });
     const data = [
       {
-        name: '你好',
-        name_vector: await this.embeddingsModel.embedQuery('你好'),
+        name: '今天天气真好，大太阳',
+        name_vector: await this.embeddingsModel.embedQuery(
+          '今天天气真好，大太阳',
+        ),
       },
     ];
     const res = await this.milvusClient.insert({
@@ -148,40 +150,94 @@ export class StudyMilvusService {
       fields_data: data,
     });
     console.log('=>(study.milvus.service.ts 146) res', res);
+
+    // 落库
+    // await this.milvusClient.flush({
+    //   collection_names: ['art'],
+    // });
   }
 
+  /**
+   * 插入数据后的搜索
+   */
+  async searchAfterInsert() {
+    await this.milvusClient.useDatabase({ db_name: 'test' });
+    const result = await this.milvusClient.search({
+      collection_name: 'art',
+      // db_name: this.db_name,
+      vector: await this.embeddingsModel.embedQuery('你怎样'),
+      limit: 2,
+      anns_field: 'name_vector',
+      output_fields: ['name', 'id'],
+    });
+    console.log('=>(study.milvus.service.ts 124) result', result);
+  }
+
+  /**
+   * 使用LangChain Milvus搜索
+   */
+  async searchWithLangchainMilvus() {
+    const vectorStore = new Milvus(this.embeddingsModel, {
+      collectionName: 'art',
+      vectorField: 'name_vector',
+      textField: 'name',
+      clientConfig: {
+        address: 'localhost:19530',
+        timeout: 5000,
+        database: 'test',
+      },
+      indexCreateOptions: {
+        index_type: 'IVF_HNSW',
+        metric_type: 'COSINE',
+      },
+    });
+
+    const res = await vectorStore.similaritySearchWithScore('你怎么样', 2);
+    console.log('=>(study.milvus.service.ts 190) res', res);
+  }
+
+  /**
+   * @deprecated
+   * 暂不可用
+   */
   // async store() {
-  //   await this.milvusClient.useDatabase({ db_name: 'langchain_milvus' });
-  //   const vectorStore = new Milvus(this.embeddingsModel, {
-  //     collectionName: 'text',
-  //     // partitionName?: string;
-  //     // primaryField?: string;
-  //     vectorField: 'text_vector',
-  //     // textField?: string;
-  //     // url?: string;
-  //     // ssl?: boolean;
-  //     // username?: string;
-  //     // password?: string;
-  //     // textFieldMaxLength?: number;
-  //     clientConfig: {
-  //       address: 'localhost:19530',
-  //       timeout: 5000,
-  //     },
+  //   try {
+  //     // First ensure we're using the correct database
+  //     await this.milvusClient.useDatabase({ db_name: 'langchain_milvus' });
   //
-  //     // autoId?: boolean;
-  //     // indexCreateOptions?: IndexCreateOptions;
-  //     // partitionKey?: string;
-  //     // partitionKeyMaxLength?: number;
-  //   });
-  //
-  //   const res = await vectorStore.addDocuments([
-  //     {
-  //       pageContent: '你好',
-  //       metadata: {
-  //         name: '你好',
+  //     // Initialize Milvus vector store with LangChain
+  //     const vectorStore = new Milvus(this.embeddingsModel, {
+  //       collectionName: 'text',
+  //       vectorField: 'text_vector',
+  //       textField: 'text',
+  //       clientConfig: {
+  //         address: 'localhost:19530',
+  //         timeout: 5000,
   //       },
-  //     },
-  //   ]);
-  //   console.log('=>(study.milvus.service.ts 185) res', res);
+  //     });
+  //
+  //     // Create sample documents
+  //     const documents = [
+  //       new Document({
+  //         pageContent:
+  //           'This is a sample document about artificial intelligence.',
+  //         metadata: { name: 'ai' },
+  //       }),
+  //       new Document({
+  //         pageContent:
+  //           'Machine learning is a subset of artificial intelligence.',
+  //         metadata: { name: 'ml' },
+  //       }),
+  //     ];
+  //
+  //     // Add documents to the vector store
+  //     const result = await vectorStore.addDocuments(documents);
+  //     console.log('Documents added successfully:', result);
+  //
+  //     return result;
+  //   } catch (error) {
+  //     console.error('Error storing documents:', error);
+  //     throw error;
+  //   }
   // }
 }
