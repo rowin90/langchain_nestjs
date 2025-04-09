@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { Document } from '@langchain/core/documents';
 import { MilvusClient } from '@zilliz/milvus2-sdk-node';
 import { Milvus } from '@langchain/community/vectorstores/milvus';
+import { texts } from '../share/documents';
 
 @Injectable()
 export class StudyMilvusService {
@@ -136,17 +137,24 @@ export class StudyMilvusService {
    * 向量插入
    */
   async insert() {
-    await this.milvusClient.useDatabase({ db_name: 'test' });
-    const data = [
-      {
-        name: '今天天气真好，大太阳',
-        name_vector: await this.embeddingsModel.embedQuery(
-          '今天天气真好，大太阳',
-        ),
-      },
-    ];
+    await this.milvusClient.useDatabase({ db_name: 'langchain_milvus' });
+    // const data = [
+    //   {
+    //     text: '今天天气真好，大太阳',
+    //     text_vector: await this.embeddingsModel.embedQuery(
+    //       '今天天气真好，大太阳',
+    //     ),
+    //   },
+    // ];
+
+    const row = texts.map(async (text) => ({
+      text: text,
+      text_vector: await this.embeddingsModel.embedQuery(text),
+    }));
+
+    const data = await Promise.all(row);
     const res = await this.milvusClient.insert({
-      collection_name: 'art',
+      collection_name: 'text',
       fields_data: data,
     });
     console.log('=>(study.milvus.service.ts 146) res', res);
@@ -178,13 +186,13 @@ export class StudyMilvusService {
    */
   async searchWithLangchainMilvus() {
     const vectorStore = new Milvus(this.embeddingsModel, {
-      collectionName: 'art',
-      vectorField: 'name_vector',
-      textField: 'name',
+      collectionName: 'text',
+      vectorField: 'text_vector',
+      textField: 'text',
       clientConfig: {
         address: 'localhost:19530',
         timeout: 5000,
-        database: 'test',
+        database: 'langchain_milvus',
       },
       indexCreateOptions: {
         index_type: 'IVF_HNSW',
@@ -192,7 +200,10 @@ export class StudyMilvusService {
       },
     });
 
-    const res = await vectorStore.similaritySearchWithScore('你怎么样', 2);
+    const res = await vectorStore.similaritySearchWithScore(
+      '天天上班很无聊',
+      4,
+    );
     console.log('=>(study.milvus.service.ts 190) res', res);
   }
 
