@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { Document } from '@langchain/core/documents';
 import { MilvusClient } from '@zilliz/milvus2-sdk-node';
 import { Milvus } from '@langchain/community/vectorstores/milvus';
-import { texts } from '../share/documents';
+import { documents, texts } from '../share/documents';
 
 @Injectable()
 export class StudyMilvusService {
@@ -208,47 +208,64 @@ export class StudyMilvusService {
   }
 
   /**
-   * @deprecated
-   * 暂不可用
+   * milvus保存文本并搜索
    */
-  // async store() {
-  //   try {
-  //     // First ensure we're using the correct database
-  //     await this.milvusClient.useDatabase({ db_name: 'langchain_milvus' });
-  //
-  //     // Initialize Milvus vector store with LangChain
-  //     const vectorStore = new Milvus(this.embeddingsModel, {
-  //       collectionName: 'text',
-  //       vectorField: 'text_vector',
-  //       textField: 'text',
-  //       clientConfig: {
-  //         address: 'localhost:19530',
-  //         timeout: 5000,
-  //       },
-  //     });
-  //
-  //     // Create sample documents
-  //     const documents = [
-  //       new Document({
-  //         pageContent:
-  //           'This is a sample document about artificial intelligence.',
-  //         metadata: { name: 'ai' },
-  //       }),
-  //       new Document({
-  //         pageContent:
-  //           'Machine learning is a subset of artificial intelligence.',
-  //         metadata: { name: 'ml' },
-  //       }),
-  //     ];
-  //
-  //     // Add documents to the vector store
-  //     const result = await vectorStore.addDocuments(documents);
-  //     console.log('Documents added successfully:', result);
-  //
-  //     return result;
-  //   } catch (error) {
-  //     console.error('Error storing documents:', error);
-  //     throw error;
-  //   }
-  // }
+  async milvusSaveTextAndSearch() {
+    const vectorStore = await Milvus.fromTexts(
+      texts,
+      {},
+      this.embeddingsModel,
+      {
+        collectionName: 'text',
+        vectorField: 'text_vector',
+        textField: 'text',
+        clientConfig: {
+          address: 'localhost:19530',
+          timeout: 5000,
+          database: 'langchain_milvus',
+        },
+        indexCreateOptions: {
+          index_type: 'IVF_HNSW',
+          metric_type: 'COSINE',
+        },
+      },
+    );
+
+    const res = await vectorStore.similaritySearchWithScore(
+      '天天上班很无聊',
+      4,
+    );
+    console.log('=>(study.milvus.service.ts 190) res', res);
+  }
+
+  /**
+   * milvus保存文本
+   */
+  async milvusSaveDocument() {
+    const vectorStore = await Milvus.fromDocuments(
+      documents,
+      this.embeddingsModel,
+      {
+        collectionName: 'text',
+        vectorField: 'text_vector',
+        textField: 'text',
+        clientConfig: {
+          address: 'localhost:19530',
+          timeout: 5000,
+          database: 'langchain_milvus',
+        },
+        indexCreateOptions: {
+          index_type: 'IVF_HNSW',
+          metric_type: 'COSINE',
+        },
+      },
+    );
+    console.log('=>(study.milvus.service.ts 264) 保存成功');
+
+    // const res = await vectorStore.similaritySearchWithScore(
+    //   '天天上班很无聊',
+    //   4,
+    // );
+    // console.log('=>(study.milvus.service.ts 190) res', res);
+  }
 }
