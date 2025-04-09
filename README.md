@@ -30,3 +30,20 @@ RAG使用的是 ollama 提供的 Embedding 模型，需要打开
 2. mcp官方提供检测工具
 - 执行 ` npx @modelcontextprotocol/inspector node ./mcp/mcp.server.js`
 ![mcp运行记录](./images/mcp_inspector.png)
+
+# milvus
+- 下载 docker-compose，本地启动 milvus 服务
+```sh
+# Download the configuration file
+$ wget https://github.com/milvus-io/milvus/releases/download/v2.5.6/milvus-standalone-docker-compose.yml -O docker-compose.yml
+
+# Start Milvus
+$ sudo docker compose up -d
+```
+
+## attu 可视化界面
+https://github.com/zilliztech/attu
+
+```sh
+docker run -p 8000:3000 -e MILVUS_URL={milvus server IP}:19530 zilliz/attu:v2.5
+```
