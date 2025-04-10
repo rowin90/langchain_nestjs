@@ -4,6 +4,8 @@ import { ChatOpenAI } from '@langchain/openai';
 import { MilvusClient } from '@zilliz/milvus2-sdk-node';
 import { Milvus } from '@langchain/community/vectorstores/milvus';
 import { documents, texts } from '../share/documents';
+import { TextLoader } from 'langchain/document_loaders/fs/text';
+import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
 @Injectable()
 export class StudyMilvusService {
@@ -219,10 +221,33 @@ export class StudyMilvusService {
    * milvus保存文本
    */
   async milvusSaveDocument() {
-    const vectorStore = await Milvus.fromDocuments(documents, this.embedding, {
-      collectionName: 'text',
-      vectorField: 'text_vector',
-      textField: 'text',
+    // const vectorStore = await Milvus.fromDocuments(documents, this.embedding, {
+    //   collectionName: 'text',
+    //   vectorField: 'text_vector',
+    //   textField: 'text',
+    //   clientConfig: {
+    //     address: 'localhost:19530',
+    //     timeout: 5000,
+    //     database: 'langchain_milvus',
+    //   },
+    //   indexCreateOptions: {
+    //     index_type: 'IVF_HNSW',
+    //     metric_type: 'COSINE',
+    //   },
+    // });
+
+    const text = new TextLoader('./doc/example.txt');
+    const docs = await text.load();
+    const splitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 200,
+      chunkOverlap: 20,
+    });
+    const splitDocs = await splitter.splitDocuments(docs);
+
+    await Milvus.fromDocuments(splitDocs, this.embedding, {
+      collectionName: 'article',
+      vectorField: 'content_vector',
+      textField: 'content',
       clientConfig: {
         address: 'localhost:19530',
         timeout: 5000,
@@ -233,9 +258,9 @@ export class StudyMilvusService {
         metric_type: 'COSINE',
       },
     });
-    console.log('=>(study.milvus.service.ts 264) 保存成功');
+    console.log('=>(study.milvus.service.ts 262) 保存完成');
 
-    // const res = await vectorStore.similaritySearchWithScore(
+    // // const res = await vectorStore.similaritySearchWithScore(
     //   '天天上班很无聊',
     //   4,
     // );

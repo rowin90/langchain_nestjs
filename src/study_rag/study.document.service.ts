@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
 import { UnstructuredLoader } from '@langchain/community/document_loaders/fs/unstructured';
@@ -13,19 +13,10 @@ import { FaissStore } from '@langchain/community/vectorstores/faiss';
 
 @Injectable()
 export class StudyDocumentService {
-  private embeddingsModel: OllamaEmbeddings;
-
-  constructor(private readonly configService: ConfigService) {
-    this.embeddingsModel = new OllamaEmbeddings({
-      model: 'llama3.1', // default value
-      baseUrl: 'http://localhost:11434', // default value
-      requestOptions: {
-        useMMap: true, // use_mmap 1
-        numThread: 10, // num_thread 10
-        numGpu: 1, // num_gpu 1
-      },
-    });
-  }
+  constructor(
+    private readonly configService: ConfigService,
+    @Inject('OLLAMA_EMBEDDINGS') private readonly embeddings: OllamaEmbeddings,
+  ) {}
 
   async textLoader() {
     const text = new TextLoader('./doc/example.txt');
@@ -63,7 +54,7 @@ export class StudyDocumentService {
     const docs = await mdloader.load();
     // console.log('=>(study.document.service.ts 64) docs', docs);
     // console.log('=>(study.document.service.ts 63) 加载结束');
-    const db = await FaissStore.fromDocuments(docs, this.embeddingsModel);
+    const db = await FaissStore.fromDocuments(docs, this.embeddings);
     db.save('./faiss_index/api_md_faiss_index');
     console.log('=>保存');
   }
@@ -124,7 +115,7 @@ export class StudyDocumentService {
     splitDocs.forEach((doc: Document) => {
       console.log('块大小', doc.pageContent.length);
     });
-    console.log('=>(study.document.service.ts 81) splitDocs', splitDocs.length);
+    console.log('=>(study.document.service.ts 81) splitDocs', splitDocs);
   }
 
   /**
