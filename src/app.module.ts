@@ -14,11 +14,13 @@ import { StudyModule } from './study/study.module';
 import { StudyRagModule } from './study_rag/study.rag.module';
 import { StudyAgentModule } from './study_agent/study.agent.module';
 import { StudyVectorstoreModule } from './study_vectorstore/study.vectorstore.module';
+import { LibModule } from './lib/lib.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    LibModule,
     OllamaModule,
     AiModule,
     RagModule,

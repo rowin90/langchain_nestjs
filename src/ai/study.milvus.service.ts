@@ -1,26 +1,44 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
 import { ChatOpenAI } from '@langchain/openai';
+import { ConfigService } from '@nestjs/config';
+import { Document } from '@langchain/core/documents';
 import { MilvusClient } from '@zilliz/milvus2-sdk-node';
 import { Milvus } from '@langchain/community/vectorstores/milvus';
 import { documents, texts } from '../share/documents';
 
 @Injectable()
 export class StudyMilvusService {
+  private embeddingsModel: OllamaEmbeddings;
+  private llm: ChatOpenAI;
+  private milvusClient: MilvusClient;
   private db_name = 'blog';
   private connection_name = 'user';
   private field_name = 'name_vector';
 
-  constructor(
-    @Inject('OLLAMA_EMBEDDINGS')
-    private readonly embedding: OllamaEmbeddings,
+  constructor(private readonly configService: ConfigService) {
+    this.embeddingsModel = new OllamaEmbeddings({
+      model: 'nomic-embed-text', // default value
+      baseUrl: 'http://localhost:11434', // default value
+      requestOptions: {
+        useMMap: true, // use_mmap 1
+        numThread: 10, // num_thread 10
+        numGpu: 1, // num_gpu 1
+      },
+    });
 
-    @Inject('OPEN_AI')
-    private readonly llm: ChatOpenAI,
+    this.llm = new ChatOpenAI({
+      modelName: 'gpt-3.5-turbo-16k',
+      configuration: {
+        baseURL: this.configService.get('OPENAI_API_BASE_URL'),
+      },
+    });
 
-    @Inject('MILVUS_CLIENT')
-    private readonly milvusClient: MilvusClient,
-  ) {}
+    this.milvusClient = new MilvusClient({
+      address: 'localhost:19530',
+      timeout: 5000,
+    });
+  }
 
   /**
    * 添加向量索引
@@ -123,7 +141,7 @@ export class StudyMilvusService {
     // const data = [
     //   {
     //     text: '今天天气真好，大太阳',
-    //     text_vector: await this.embedding.embedQuery(
+    //     text_vector: await this.embeddingsModel.embedQuery(
     //       '今天天气真好，大太阳',
     //     ),
     //   },
@@ -131,7 +149,7 @@ export class StudyMilvusService {
 
     const row = texts.map(async (text) => ({
       text: text,
-      text_vector: await this.embedding.embedQuery(text),
+      text_vector: await this.embeddingsModel.embedQuery(text),
     }));
 
     const data = await Promise.all(row);
@@ -155,7 +173,7 @@ export class StudyMilvusService {
     const result = await this.milvusClient.search({
       collection_name: 'art',
       // db_name: this.db_name,
-      vector: await this.embedding.embedQuery('你怎样'),
+      vector: await this.embeddingsModel.embedQuery('你怎样'),
       limit: 2,
       anns_field: 'name_vector',
       output_fields: ['name', 'id'],
@@ -167,7 +185,7 @@ export class StudyMilvusService {
    * 使用LangChain Milvus搜索
    */
   async searchWithLangchainMilvus() {
-    const vectorStore = new Milvus(this.embedding, {
+    const vectorStore = new Milvus(this.embeddingsModel, {
       collectionName: 'text',
       vectorField: 'text_vector',
       textField: 'text',
@@ -193,20 +211,25 @@ export class StudyMilvusService {
    * milvus保存文本并搜索
    */
   async milvusSaveTextAndSearch() {
-    const vectorStore = await Milvus.fromTexts(texts, {}, this.embedding, {
-      collectionName: 'text',
-      vectorField: 'text_vector',
-      textField: 'text',
-      clientConfig: {
-        address: 'localhost:19530',
-        timeout: 5000,
-        database: 'langchain_milvus',
+    const vectorStore = await Milvus.fromTexts(
+      texts,
+      {},
+      this.embeddingsModel,
+      {
+        collectionName: 'text',
+        vectorField: 'text_vector',
+        textField: 'text',
+        clientConfig: {
+          address: 'localhost:19530',
+          timeout: 5000,
+          database: 'langchain_milvus',
+        },
+        indexCreateOptions: {
+          index_type: 'IVF_HNSW',
+          metric_type: 'COSINE',
+        },
       },
-      indexCreateOptions: {
-        index_type: 'IVF_HNSW',
-        metric_type: 'COSINE',
-      },
-    });
+    );
 
     const res = await vectorStore.similaritySearchWithScore(
       '天天上班很无聊',
@@ -219,20 +242,24 @@ export class StudyMilvusService {
    * milvus保存文本
    */
   async milvusSaveDocument() {
-    const vectorStore = await Milvus.fromDocuments(documents, this.embedding, {
-      collectionName: 'text',
-      vectorField: 'text_vector',
-      textField: 'text',
-      clientConfig: {
-        address: 'localhost:19530',
-        timeout: 5000,
-        database: 'langchain_milvus',
+    const vectorStore = await Milvus.fromDocuments(
+      documents,
+      this.embeddingsModel,
+      {
+        collectionName: 'text',
+        vectorField: 'text_vector',
+        textField: 'text',
+        clientConfig: {
+          address: 'localhost:19530',
+          timeout: 5000,
+          database: 'langchain_milvus',
+        },
+        indexCreateOptions: {
+          index_type: 'IVF_HNSW',
+          metric_type: 'COSINE',
+        },
       },
-      indexCreateOptions: {
-        index_type: 'IVF_HNSW',
-        metric_type: 'COSINE',
-      },
-    });
+    );
     console.log('=>(study.milvus.service.ts 264) 保存成功');
 
     // const res = await vectorStore.similaritySearchWithScore(
