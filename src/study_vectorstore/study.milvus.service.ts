@@ -5,6 +5,7 @@ import { MilvusClient } from '@zilliz/milvus2-sdk-node';
 import { Milvus } from '@langchain/community/vectorstores/milvus';
 import { documents, texts } from '../share/documents';
 import { TextLoader } from 'langchain/document_loaders/fs/text';
+import { Document } from 'langchain/document';
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
 
 @Injectable()
@@ -170,9 +171,9 @@ export class StudyMilvusService {
    */
   async searchWithLangchainMilvus() {
     const vectorStore = new Milvus(this.embedding, {
-      collectionName: 'text',
-      vectorField: 'text_vector',
-      textField: 'text',
+      collectionName: 'article',
+      vectorField: 'content_vector',
+      textField: 'content',
       clientConfig: {
         address: 'localhost:19530',
         timeout: 5000,
@@ -185,9 +186,43 @@ export class StudyMilvusService {
     });
 
     const res = await vectorStore.similaritySearchWithScore(
-      '天天上班很无聊',
+      '这次事故的原因是什么？该如何避免',
       4,
     );
+    console.log('=>(study.milvus.service.ts 190) res', res);
+  }
+
+  /**
+   * 使用LangChain Milvus Retriever搜索
+   */
+  async searchWithLangchainMilvusRetriever() {
+    const vectorStore = new Milvus(this.embedding, {
+      collectionName: 'article',
+      vectorField: 'content_vector',
+      textField: 'content',
+      clientConfig: {
+        address: 'localhost:19530',
+        timeout: 5000,
+        database: 'langchain_milvus',
+      },
+      indexCreateOptions: {
+        index_type: 'IVF_HNSW',
+        metric_type: 'COSINE',
+      },
+    });
+
+    const retriever = vectorStore.asRetriever({
+      k: 4,
+    });
+
+    const convertDocsToString = (documents: Document[]): string => {
+      return documents.map((document) => document.pageContent).join('\n');
+    };
+
+    const chain = retriever.pipe(convertDocsToString);
+
+    const res = await chain.invoke('这次事故的原因是什么？该如何避免');
+
     console.log('=>(study.milvus.service.ts 190) res', res);
   }
 
