@@ -15,10 +15,17 @@ import { StudyRagModule } from './study_rag/study.rag.module';
 import { StudyAgentModule } from './study_agent/study.agent.module';
 import { StudyVectorstoreModule } from './study_vectorstore/study.vectorstore.module';
 import { LibModule } from './lib/lib.module';
+import { RedisModule } from '@nestjs-modules/ioredis';
+import { StudyMilvusProjectService } from './study_vectorstore/study.milvus.project.service';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    RedisModule.forRoot({
+      type: 'single',
+      url: 'redis://localhost:6379',
     }),
     LibModule,
     OllamaModule,
@@ -34,6 +41,6 @@ import { LibModule } from './lib/lib.module';
     StudyVectorstoreModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, StudyMilvusProjectService],
 })
 export class AppModule {}

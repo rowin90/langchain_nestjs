@@ -130,6 +130,7 @@ New summary:
         func: async (input) => {
           history.addAIChatMessage(input);
           const messages = await history.getMessages();
+          // 因为后面有 history.clear() 所以这里每次取的都是最近的一条
           const new_lines = getBufferString(messages);
           const newSummary = await summaryChain.invoke({
             summary,
