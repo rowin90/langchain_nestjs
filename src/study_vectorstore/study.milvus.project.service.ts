@@ -3,8 +3,6 @@ import { OllamaEmbeddings } from '@langchain/community/embeddings/ollama';
 import { ChatOpenAI } from '@langchain/openai';
 import { MilvusClient } from '@zilliz/milvus2-sdk-node';
 import { Milvus } from '@langchain/community/vectorstores/milvus';
-import { documents, texts } from '../share/documents';
-import { TextLoader } from 'langchain/document_loaders/fs/text';
 import { Document } from 'langchain/document';
 import {
   RunnableSequence,
@@ -16,7 +14,7 @@ import {
 } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RedisChatMessageHistory } from '@langchain/community/stores/message/ioredis';
-import { BufferMemory } from 'langchain/memory';
+import { BufferMemory, BufferWindowMemory } from 'langchain/memory';
 
 @Injectable()
 export class StudyMilvusProjectService {
@@ -41,8 +39,15 @@ export class StudyMilvusProjectService {
     this.memory = new BufferMemory({
       chatHistory: messageHistory,
       returnMessages: true,
-      memoryKey: 'chat_history',
+      memoryKey: 'chat_history', // 默认的 inputKey：question,outputKey:'response'
     });
+
+    // this.memory = new BufferWindowMemory({
+    //   chatHistory: messageHistory,
+    //   returnMessages: true,
+    //   memoryKey: 'chat_history',
+    //   k:2
+    // });
   }
 
   /**
